@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FISH CATCH AI - Multi-Screen Android Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Metallic Navigation Bar -->
+        <header class="navbar">
+            <div class="brand">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 12c.5-2.5 2-4.5 4.5-5 3.5-.8 8.5 2 11.5 5-3 3-8 5.8-11.5 5-2.5-.5-4-2.5-4.5-5z"/>
+                        <path d="M18 12c.5-1 2-2 3.5-2"/>
+                        <path d="M6 12L2 9v6l4-3z"/>
+                        <circle cx="16" cy="11" r="1" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>FISH CATCH AI <span class="brand-badge">ANDROID V3.0</span></h1>
+                    <span class="badge-sub">On-Device Edge ML • Offline Room DB • Central Cloud Sync</span>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <!-- Internet Connectivity Toggle -->
+                <button class="nav-btn btn-net" id="toggleInternetBtn" title="Toggle Network Connection">
+                    <span class="net-status-dot online" id="netDot"></span>
+                    <span id="netStatusText">Online</span>
+                </button>
+
+                <!-- Cloud Sync Button -->
+                <button class="nav-btn btn-sync" id="btnCloudSync">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+                    </svg>
+                    Sync Cloud
+                    <span class="pending-sync-badge" id="pendingSyncBadge" style="display:none;">0</span>
+                </button>
+
+                <!-- Architecture Modal Button -->
+                <button class="nav-btn" id="btnOpenArchitecture">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Architecture
+                </button>
+
+                <!-- Stakeholder Portal Modal Button -->
+                <button class="nav-btn" id="btnOpenPortals">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Portals
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Screen Navigation Tabs (Main App Screens Structure) -->
+        <nav class="main-app-nav">
+            <button class="nav-screen-tab active" data-screen="identify">
+                <span class="tab-emoji">📷</span>
+                <span>Identify New Catch</span>
+            </button>
+            <button class="nav-screen-tab" data-screen="history">
+                <span class="tab-emoji">📋</span>
+                <span>Catch History</span>
+                <span class="nav-tab-badge" id="tabHistoryCount">0</span>
+            </button>
+            <button class="nav-screen-tab" data-screen="map">
+                <span class="tab-emoji">🗺️</span>
+                <span>Catch Map</span>
+            </button>
+            <button class="nav-screen-tab" data-screen="reports">
+                <span class="tab-emoji">📊</span>
+                <span>Reports & Statistics</span>
+            </button>
+            <button class="nav-screen-tab" data-screen="settings">
+                <span class="tab-emoji">⚙️</span>
+                <span>Settings</span>
+            </button>
+        </nav>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 1: IDENTIFY NEW CATCH                                              -->
+        <!-- ========================================================================= -->
+        <div class="screen-view active" id="screen-identify">
+            <!-- Pipeline Ribbon Matching End-to-End System Architecture -->
+            <section class="pipeline-ribbon">
+                <div class="pipe-node active"><span class="pipe-step">👤</span><span>USER</span></div>
+                <div class="pipe-arrow">➜</div>
+                <div class="pipe-node active"><span class="pipe-step">📱</span><span>Android UI (Kotlin/Compose)</span></div>
+                <div class="pipe-arrow">➜</div>
+                <div class="pipe-node active"><span class="pipe-step">📷</span><span>Camera + GPS</span></div>
+                <div class="pipe-arrow">➜</div>
+                <div class="pipe-node active"><span class="pipe-step">🧠</span><span>On-Device AI (TFLite / ONNX)</span></div>
+                <div class="pipe-arrow">➜</div>
+                <div class="pipe-node active"><span class="pipe-step">🎯</span><span>Species • Health • Volume</span></div>
+                <div class="pipe-arrow">➜</div>
+                <div class="pipe-node active"><span class="pipe-step">💾</span><span>Room / SQLite Offline</span></div>
+                <div class="pipe-arrow">➜</div>
+                <div class="pipe-node" id="pipeSyncNode"><span class="pipe-step">⚡</span><span id="pipeSyncLabel">Sync Engine (when online)</span></div>
+                <div class="pipe-arrow">➜</div>
+                <div class="pipe-node"><span class="pipe-step">☁️</span><span>Cloud Server + Dashboard</span></div>
+            </section>
+
+            <main class="dashboard-grid">
+                <!-- Left: Viewport Stage -->
+                <section class="viewport-card">
+                    <div class="card-header">
+                        <div class="tab-group">
+                            <button class="tab-btn active" id="tabSample">Species Presets</button>
+                            <button class="tab-btn" id="tabUpload">Upload Photo</button>
+                        </div>
+                        <div class="canvas-controls">
+                            <label class="switch-container"><input type="checkbox" id="toggleKeypoints" checked><span>Keypoints</span></label>
+                            <label class="switch-container"><input type="checkbox" id="toggleBox" checked><span>Detection Box</span></label>
+                            <label class="switch-container"><input type="checkbox" id="toggleMeasurements" checked><span>Morphology</span></label>
+                        </div>
+                    </div>
+
+                    <div class="viewport-body">
+                        <!-- Presets Bar -->
+                        <div class="presets-container">
+                            <div class="presets-label">
+                                <span>Target Species Profile (12 On-Device Profiles)</span>
+                                <span id="presetCategoryLabel">Pelagic / Freshwater / Marine</span>
+                            </div>
+                            <div class="presets-row" id="presetsBar">
+                                <button class="preset-pill active" data-preset="salmon">Atlantic Salmon</button>
+                                <button class="preset-pill" data-preset="tuna">Yellowfin Tuna</button>
+                                <button class="preset-pill" data-preset="snapper">Red Snapper</button>
+                                <button class="preset-pill" data-preset="trout">Rainbow Trout</button>
+                                <button class="preset-pill" data-preset="tilapia">Nile Tilapia</button>
+                                <button class="preset-pill" data-preset="bass">Sea Bass</button>
+                                <button class="preset-pill" data-preset="mahi">Mahi Mahi</button>
+                                <button class="preset-pill" data-preset="catfish">Channel Catfish</button>
+                                <button class="preset-pill" data-preset="cod">Atlantic Cod</button>
+                                <button class="preset-pill" data-preset="mackerel">King Mackerel</button>
+                                <button class="preset-pill" data-preset="barramundi">Barramundi</button>
+                                <button class="preset-pill" data-preset="pomfret">Golden Pomfret</button>
+                            </div>
+                        </div>
+
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+                        <div class="canvas-wrapper" id="canvasWrapper">
+                            <canvas id="mainCanvas"></canvas>
+                            <video id="webcamVideo" autoplay playsinline muted style="display: none;"></video>
+                            
+                            <!-- Dedicated Live Camera "Fish Scanner" HUD UI -->
+                            <div class="camera-scanner-hud" id="cameraScannerHud" style="display: none;">
+                                <div class="cam-hud-top">
+                                    <button class="cam-hud-back-btn" id="btnCamBack">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                                        <span>Fish Scanner</span>
+                                    </button>
+                                    <div class="cam-hud-live-tag"><span class="live-pulse"></span> LIVE 60 FPS</div>
+                                </div>
+
+                                <div class="cam-target-guide">
+                                    <div class="cam-reticle-box">
+                                        <div class="reticle-corner tl"></div>
+                                        <div class="reticle-corner tr"></div>
+                                        <div class="reticle-corner bl"></div>
+                                        <div class="reticle-corner br"></div>
+                                        <div class="reticle-center-icon">
+                                            <span class="fish-reticle-emoji">🐟</span>
+                                            <span class="fish-reticle-txt">FISH</span>
+                                        </div>
+                                    </div>
+                                    <div class="cam-guide-caption">
+                                        <span class="guide-text">Position fish horizontally inside frame</span>
+                                    </div>
+                                </div>
+
+                                <div class="cam-hud-bottom">
+                                    <button class="cam-shutter-btn" id="btnCapturePhoto" title="Capture Fish Photo">
+                                        <div class="shutter-inner">
+                                            <div class="shutter-circle"></div>
+                                        </div>
+                                        <span class="shutter-label">CAPTURE</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="scan-line" id="scanLine"></div>
+                            <div class="overlay-watermark">FISH CATCH AI • TFLITE REAL-TIME SEGMENTATION</div>
+                        </div>
+
+                        <div class="calibration-bar">
+                            <div class="calib-item">
+                                <label for="scaleSlider">Reference Scale (Pixels / mm): <strong id="scaleVal">2.8 px/mm</strong></label>
+                                <input type="range" id="scaleSlider" min="0.8" max="6.0" step="0.1" value="2.8">
+                            </div>
+                            <div class="calib-item">
+                                <label for="aspectSlider">Body Depth Aspect (W/H): <strong id="aspectVal">0.58</strong></label>
+                                <input type="range" id="aspectSlider" min="0.30" max="0.95" step="0.02" value="0.58">
+                            </div>
+                            <button class="action-btn" id="reanalyzeBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/></svg>
+                                Re-Analyze
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bottom: Calculations & Telemetry Grid (Below the Stage) -->
+                <section class="telemetry-card">
+                    <!-- Master Analysis Result Card Header -->
+                    <div class="result-box analysis-result-master telemetry-full-row">
+                        <div class="analysis-result-header">
+                            <span class="analysis-tag">⚡ ON-DEVICE TFLite SCAN COMPLETE</span>
+                            <h2 class="analysis-title">ANALYSIS RESULT</h2>
+                        </div>
+
+                        <!-- 6-Item Structured Analysis Grid Matching Screen Architecture -->
+                        <div class="analysis-items-list">
+                            <!-- Item 1: Species -->
+                            <div class="analysis-item-row">
+                                <div class="item-icon-title">
+                                    <span class="a-icon">🐟</span>
+                                    <span class="a-label">Species</span>
+                                </div>
+                                <div class="item-value-block">
+                                    <strong class="a-val-primary" id="speciesName">Atlantic Salmon</strong>
+                                    <span class="a-val-sub" id="scientificName">Salmo salar</span>
+                                </div>
+                            </div>
+
+                            <!-- Item 2: Health -->
+                            <div class="analysis-item-row">
+                                <div class="item-icon-title">
+                                    <span class="a-icon">❤️</span>
+                                    <span class="a-label">Health</span>
+                                </div>
+                                <div class="item-value-block">
+                                    <strong class="a-val-primary" id="analysisHealthText">Healthy – 92%</strong>
+                                    <span class="a-val-sub" id="valSkin">Intact Scales & Clear Cornea</span>
+                                </div>
+                            </div>
+
+                            <!-- Item 3: Estimated Size -->
+                            <div class="analysis-item-row">
+                                <div class="item-icon-title">
+                                    <span class="a-icon">📏</span>
+                                    <span class="a-label">Estimated Size</span>
+                                </div>
+                                <div class="item-value-block">
+                                    <strong class="a-val-primary" id="valLength">52.0 <small>cm</small></strong>
+                                    <span class="a-val-sub" id="valHeightWidthSub">Depth: 12.2 cm • Width: 7.1 cm</span>
+                                </div>
+                            </div>
+
+                            <!-- Item 4: Estimated Weight / Volume -->
+                            <div class="analysis-item-row">
+                                <div class="item-icon-title">
+                                    <span class="a-icon">⚖️</span>
+                                    <span class="a-label">Estimated Weight / Volume</span>
+                                </div>
+                                <div class="item-value-block">
+                                    <strong class="a-val-primary" id="valWeight">1.58 <small>kg</small></strong>
+                                    <span class="a-val-sub" id="valVolume">Volume: 2,360 cm³ (Ellipsoid)</span>
+                                </div>
+                            </div>
+
+                            <!-- Item 5: Location -->
+                            <div class="analysis-item-row">
+                                <div class="item-icon-title">
+                                    <span class="a-icon">📍</span>
+                                    <span class="a-label">Location</span>
+                                </div>
+                                <div class="item-value-block">
+                                    <strong class="a-val-primary" id="gpsCoordinates">13.0827° N, 80.2707° E</strong>
+                                    <span class="a-val-sub">Bay of Bengal Coastal Zone (GPS Calibrated)</span>
+                                </div>
+                            </div>
+
+                            <!-- Item 6: Date & Time -->
+                            <div class="analysis-item-row">
+                                <div class="item-icon-title">
+                                    <span class="a-icon">🕒</span>
+                                    <span class="a-label">Date & Time</span>
+                                </div>
+                                <div class="item-value-block">
+                                    <strong class="a-val-primary" id="liveTimestamp">29 Aug 2026, 05:14</strong>
+                                    <span class="a-val-sub" id="syncStatusTag">Offline SQLite Stored • Cloud Sync Ready</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Button: [ SAVE CATCH ] -->
+                        <button class="record-catch-big-btn" id="btnSaveRecord">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/>
+                                <polyline points="7 3 7 8 15 8"/>
+                            </svg>
+                            [ SAVE CATCH ]
+                        </button>
+                    </div>
+
+                    <!-- Additional Scientific & Fulton Diagnostics -->
+                    <div class="result-box fulton-k-box">
+                        <div class="label-heading">CONDITION FACTOR (K) & MARKET VALUATION</div>
+                        <div class="k-factor-display">
+                            <span class="k-val" id="valKFactor">1.12</span>
+                            <span class="k-interp" id="valKRating">Prime Robust</span>
+                            <span style="margin-left: auto; color: #38bdf8; font-weight: 700; font-family: var(--font-mono);" id="valMarketPrice">$29.23</span>
+                        </div>
+                        <p class="k-desc" id="valKDesc">Optimal muscle-to-length ratio and prime health index.</p>
+                    </div>
+
+                    <div class="result-box health-gauge-card">
+                        <div class="label-heading">PATHOLOGY CHECKS</div>
+                        <div class="pathology-checklist" style="margin-top: 6px;">
+                            <div class="f-item"><span class="dot green"></span> Cornea: <strong id="valCornea">Clear / Convex</strong></div>
+                            <div class="f-item"><span class="dot green"></span> Gills: <strong id="valGills">Vibrant Crimson</strong></div>
+                            <div class="f-item"><span class="dot green"></span> Fulton Formula: <strong id="biomassFormulaTag">W = a · L^b</strong></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 2: CATCH HISTORY (ROOM / SQLITE OFFLINE LOG)                      -->
+        <!-- ========================================================================= -->
+        <div class="screen-view" id="screen-history">
+            <section class="screen-card">
+                <div class="screen-header-row">
+                    <div>
+                        <h2>📋 Catch History Log</h2>
+                        <p class="screen-subtitle">Local Android Room / SQLite records and cloud synchronization state</p>
+                    </div>
+                    <div class="db-btn-group">
+                        <button class="btn-secondary" id="btnExportCSV">Export CSV</button>
+                        <button class="btn-secondary" id="btnExportJSON">Export JSON</button>
+                        <button class="btn-secondary btn-danger" id="btnClearAllDb">Clear History</button>
+                    </div>
+                </div>
+
+                <div class="db-modal-controls" style="border-radius: var(--radius-md); margin-bottom: 12px;">
+                    <div class="db-search-wrap">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" class="db-search-input" id="dbSearchInput" placeholder="Search history by species, scientific name, or GPS...">
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="db-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp & GPS</th>
+                                <th>Species</th>
+                                <th>Length</th>
+                                <th>Volume</th>
+                                <th>Weight</th>
+                                <th>Condition (K)</th>
+                                <th>Health</th>
+                                <th>Cloud Sync</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dbTableBody">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                    <div class="empty-db-state" id="emptyDbState" style="display: none;">
+                        <p>No catches logged yet. Go to <strong>Identify New Catch</strong> to log your first catch!</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 3: CATCH MAP (GPS GEO-TRACKER)                                    -->
+        <!-- ========================================================================= -->
+        <div class="screen-view" id="screen-map">
+            <section class="screen-card">
+                <div class="screen-header-row">
+                    <div>
+                        <h2>🗺️ Catch Map & Fishing Zones</h2>
+                        <p class="screen-subtitle">Geographic heatmap of identified fish specimens and catch density</p>
+                    </div>
+                    <button class="btn-secondary" id="btnRefreshGPS">📍 Refresh Current GPS</button>
+                </div>
+
+                <div class="map-interactive-container" id="mapContainer">
+                    <div class="map-grid-overlay"></div>
+                    <div class="map-radar-sweep"></div>
+                    <!-- Geo-markers rendered dynamically -->
+                    <div id="mapMarkersLayer"></div>
+                    <div class="map-legend">
+                        <div class="legend-item"><span class="marker-dot salmon-dot"></span> Salmonid Zone</div>
+                        <div class="legend-item"><span class="marker-dot pelagic-dot"></span> Pelagic Tuna / Mahi</div>
+                        <div class="legend-item"><span class="marker-dot coastal-dot"></span> Coastal Snapper / Bass</div>
+                    </div>
+                </div>
+
+                <div class="map-locations-list" id="mapLocationsList">
+                    <!-- Populated dynamically with recent coordinates -->
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 4: REPORTS & STATISTICS                                            -->
+        <!-- ========================================================================= -->
+        <div class="screen-view" id="screen-reports">
+            <section class="screen-card">
+                <div class="screen-header-row">
+                    <div>
+                        <h2>📊 Catch Reports & Biomass Analytics</h2>
+                        <p class="screen-subtitle">Aggregated metrics, health diagnostics, and species distribution summaries</p>
+                    </div>
+                    <button class="action-btn" id="btnDownloadReport">Download PDF Report</button>
+                </div>
+
+                <div class="stats-overview-grid" id="statsOverviewGrid">
+                    <!-- Injected dynamically -->
+                </div>
+
+                <div class="reports-charts-grid">
+                    <div class="chart-card">
+                        <h3>Species Catch Distribution</h3>
+                        <div class="species-bar-chart" id="speciesBarChart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Health & Freshness Breakdown</h3>
+                        <div class="health-pie-summary" id="healthSummaryCard"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 5: SETTINGS                                                        -->
+        <!-- ========================================================================= -->
+        <div class="screen-view" id="screen-settings">
+            <section class="screen-card">
+                <div class="screen-header-row">
+                    <div>
+                        <h2>⚙️ Application Settings</h2>
+                        <p class="screen-subtitle">Edge AI configuration, camera resolution, metric units, and cloud backend endpoints</p>
+                    </div>
+                </div>
+
+                <div class="settings-sections-grid">
+                    <div class="settings-box">
+                        <h3>🤖 On-Device AI Engine (TFLite)</h3>
+                        <div class="setting-item">
+                            <label>Inference Hardware Acceleration</label>
+                            <select class="setting-select" id="settingHardware">
+                                <option value="nnapi">Android NNAPI / NPU (Fastest)</option>
+                                <option value="gpu">GPU Delegate (OpenCL/Vulkan)</option>
+                                <option value="cpu" selected>Multi-Threaded CPU (SIMD)</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Detection Confidence Threshold</label>
+                            <input type="range" class="setting-range" min="50" max="99" value="85" id="settingConfidence">
+                        </div>
+                    </div>
+
+                    <div class="settings-box">
+                        <h3>📏 Measurement Units & Calibration</h3>
+                        <div class="setting-item">
+                            <label>Length & Dimension Units</label>
+                            <select class="setting-select">
+                                <option value="metric">Metric (Centimeters / Grams / kg)</option>
+                                <option value="imperial">Imperial (Inches / Pounds / lbs)</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label>Auto-Calibrate Marker Detection (AR / OpenCV)</label>
+                            <input type="checkbox" checked style="accent-color: var(--accent-cyan);">
+                        </div>
+                    </div>
+
+                    <div class="settings-box">
+                        <h3>☁️ Cloud Backend & Sync</h3>
+                        <div class="setting-item">
+                            <label>Central Cloud Database API Endpoint</label>
+                            <input type="text" class="setting-input" value="http://127.0.0.1:8080/sync/upload">
+                        </div>
+                        <div class="setting-item">
+                            <label>Auto-Sync when Wi-Fi / LTE Connected</label>
+                            <input type="checkbox" checked style="accent-color: var(--accent-cyan);">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <!-- End-to-End System Architecture Diagram Modal -->
+    <div class="modal-overlay" id="architectureModal">
+        <div class="db-modal-card" style="max-width: 850px;">
+            <div class="db-modal-header">
+                <div class="db-modal-title">
+                    <h2>End-to-End System Architecture Flow</h2>
+                    <span class="db-badge">Kotlin • TFLite • Room • Cloud</span>
+                </div>
+                <button class="modal-close-btn" id="btnCloseArchitecture">✕</button>
+            </div>
+            <div class="db-modal-body" style="background: #050a14; padding: 24px;">
+                <div class="arch-flow-container">
+                    <div class="arch-node user-node">
+                        <div class="arch-node-title">👤 USER</div>
+                    </div>
+                    <div class="arch-down-arrow">▼</div>
+
+                    <div class="arch-node">
+                        <div class="arch-node-title">📱 Android UI (Kotlin / Jetpack Compose)</div>
+                        <div class="arch-node-desc">Clean responsive camera viewfinder, telemetry cards & history</div>
+                    </div>
+                    <div class="arch-down-arrow">▼</div>
+
+                    <div class="arch-node">
+                        <div class="arch-node-title">📷 CameraX + GPS Geo-Location</div>
+                        <div class="arch-node-desc">Real-time frames, focus locking & WGS-84 coordinate tagging</div>
+                    </div>
+                    <div class="arch-down-arrow">▼</div>
+
+                    <div class="arch-node ai-node">
+                        <div class="arch-node-title">🧠 On-Device AI / ML Model</div>
+                        <div class="arch-node-desc">TensorFlow Lite / ONNX Runtime / ML Kit Edge Acceleration</div>
+                    </div>
+                    <div class="arch-down-arrow">▼</div>
+
+                    <!-- 3-Head AI Branch -->
+                    <div class="arch-tri-split">
+                        <div class="arch-tri-item">
+                            <span class="tri-icon">🐟</span>
+                            <strong>Species</strong>
+                            <small>Taxonomic classification</small>
+                        </div>
+                        <div class="arch-tri-item">
+                            <span class="tri-icon">❤️</span>
+                            <strong>Health</strong>
+                            <small>Cornea, gills & freshness</small>
+                        </div>
+                        <div class="arch-tri-item">
+                            <span class="tri-icon">⚖️</span>
+                            <strong>Volume & Biomass</strong>
+                            <small>3D Ellipsoid + Fulton W=a·L^b</small>
+                        </div>
+                    </div>
+                    <div class="arch-down-arrow">▼</div>
+
+                    <div class="arch-node db-node">
+                        <div class="arch-node-title">💾 Room / SQLite Database (Offline Storage)</div>
+                        <div class="arch-node-desc">Encrypted local persistence • Zero network dependency at sea</div>
+                    </div>
+                    <div class="arch-down-arrow">▼</div>
+
+                    <div class="arch-node sync-node">
+                        <div class="arch-node-title">⚡ Background Sync Engine (WorkManager)</div>
+                        <div class="arch-node-desc">Auto-syncs batch queue upon Wi-Fi / LTE reconnection</div>
+                    </div>
+                    <div class="arch-down-arrow">▼</div>
+
+                    <div class="arch-node cloud-node">
+                        <div class="arch-node-title">☁️ Central Cloud Server + Stakeholder Dashboard</div>
+                        <div class="arch-node-desc">FastAPI Backend • Portals for Fishermen, Quality Inspectors & Buyers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stakeholder Portals Modal -->
+    <div class="modal-overlay" id="portalsModal">
+        <div class="db-modal-card">
+            <div class="db-modal-header">
+                <div class="db-modal-title">
+                    <h2>Central Cloud Stakeholder Portals</h2>
+                    <span class="db-badge">Live Cloud View</span>
+                </div>
+                <button class="modal-close-btn" id="btnClosePortals">✕</button>
+            </div>
+            <div class="stakeholder-tabs">
+                <button class="stake-tab-btn active" data-stake="fishermen">🎣 Fishermen Log</button>
+                <button class="stake-tab-btn" data-stake="inspectors">🛡️ Quality Inspectors</button>
+                <button class="stake-tab-btn" data-stake="buyers">🛒 Buyers & Marketplace</button>
+            </div>
+            <div class="db-modal-body" id="portalContentBody"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

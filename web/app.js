@@ -715,8 +715,13 @@ function updatePendingBadge() {
 
 function switchMode(mode) {
     currentMode = mode;
-    const tabs = [document.getElementById("tabSample"), document.getElementById("tabUpload"), document.getElementById("tabWebcam")];
-    tabs.forEach(t => t.classList.remove("active"));
+    const tabSample = document.getElementById("tabSample");
+    const tabUpload = document.getElementById("tabUpload");
+    const tabWebcam = document.getElementById("tabWebcam");
+
+    if (tabSample) tabSample.classList.remove("active");
+    if (tabUpload) tabUpload.classList.remove("active");
+    if (tabWebcam) tabWebcam.classList.remove("active");
 
     const camHud = document.getElementById("cameraScannerHud");
 
@@ -725,18 +730,18 @@ function switchMode(mode) {
             webcamStream.getTracks().forEach(track => track.stop());
             webcamStream = null;
         }
-        video.style.display = "none";
-        canvas.style.display = "block";
+        if (video) video.style.display = "none";
+        if (canvas) canvas.style.display = "block";
         if (camHud) camHud.style.display = "none";
     }
 
     if (mode === "preset") {
-        tabs[0].classList.add("active");
+        if (tabSample) tabSample.classList.add("active");
         loadPreset(currentPresetKey);
     } else if (mode === "upload") {
-        tabs[1].classList.add("active");
+        if (tabUpload) tabUpload.classList.add("active");
     } else if (mode === "webcam") {
-        tabs[2].classList.add("active");
+        if (tabWebcam) tabWebcam.classList.add("active");
         startWebcam();
     }
 }
@@ -747,16 +752,17 @@ async function startWebcam() {
         webcamStream = await navigator.mediaDevices.getUserMedia({
             video: { width: 1280, height: 720, facingMode: "environment" }
         });
-        video.srcObject = webcamStream;
-        video.style.display = "block";
-        canvas.style.display = "none";
+        if (video) {
+            video.srcObject = webcamStream;
+            video.style.display = "block";
+        }
+        if (canvas) canvas.style.display = "none";
         if (camHud) camHud.style.display = "flex";
         triggerScanAnimation();
         showToast("Fish Scanner Camera Active • Position fish inside reticle");
     } catch (err) {
-        // Fallback demo simulation if browser doesn't have camera permission
-        video.style.display = "none";
-        canvas.style.display = "block";
+        if (video) video.style.display = "none";
+        if (canvas) canvas.style.display = "block";
         if (camHud) camHud.style.display = "flex";
         triggerScanAnimation();
         showToast("Fish Scanner Active: Align fish inside viewfinder & press CAPTURE");
@@ -766,14 +772,12 @@ async function startWebcam() {
 function captureFromCamera() {
     showToast("📸 Capturing frame: Running on-device TFLite segmentation...");
     
-    // Switch to analysis mode
     const camHud = document.getElementById("cameraScannerHud");
     if (camHud) camHud.style.display = "none";
-    video.style.display = "none";
-    canvas.style.display = "block";
+    if (video) video.style.display = "none";
+    if (canvas) canvas.style.display = "block";
 
-    if (webcamStream) {
-        // Capture frame snapshot from webcam stream
+    if (webcamStream && video) {
         const snapCanvas = document.createElement("canvas");
         snapCanvas.width = video.videoWidth || 640;
         snapCanvas.height = video.videoHeight || 360;
@@ -795,7 +799,6 @@ function captureFromCamera() {
         webcamStream.getTracks().forEach(track => track.stop());
         webcamStream = null;
     } else {
-        // Fallback simulation capture
         currentMode = "preset";
         loadPreset(currentPresetKey);
         triggerScanAnimation();
@@ -804,7 +807,7 @@ function captureFromCamera() {
 }
 
 function handleFileUpload(e) {
-    const file = e.target.files[0];
+    const file = e.target.files && e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
@@ -813,9 +816,14 @@ function handleFileUpload(e) {
         img.onload = () => {
             currentImage = img;
             currentMode = "upload";
-            const tabs = [document.getElementById("tabSample"), document.getElementById("tabUpload"), document.getElementById("tabWebcam")];
-            tabs.forEach(t => t.classList.remove("active"));
-            tabs[1].classList.add("active");
+
+            const tabSample = document.getElementById("tabSample");
+            const tabUpload = document.getElementById("tabUpload");
+            if (tabSample) tabSample.classList.remove("active");
+            if (tabUpload) tabUpload.classList.add("active");
+
+            // Ensure canvas dimensions match wrapper
+            setupCanvas();
 
             // Execute CV/AI Fish Detection & Segmentation on uploaded image
             analyzeUploadedImage(img);
@@ -823,6 +831,9 @@ function handleFileUpload(e) {
             updateCalculations();
             render();
             showToast("TFLite Vision: Detected fish contours & calculated biometrics!");
+
+            // Reset file input value so user can re-upload the same or another file
+            e.target.value = "";
         };
         img.src = event.target.result;
     };
